@@ -1,0 +1,82 @@
+<div class="container">
+  <nz-steps class="step" [nzCurrent]="currentStep" (nzIndexChange)="handleStepChange($event)">
+    <nz-step nzTitle="上传" [nzDisabled]="handing" [nzStatus]="uploadStatus" nzIcon="upload"></nz-step>
+    <nz-step nzTitle="统计" [nzDisabled]="true" [nzStatus]="settingStatus" nzIcon="bar-chart"></nz-step>
+    <nz-step nzTitle="完成" [nzDisabled]="true" [nzStatus]="finishStatus" [nzIcon]="handing?'loading':'smile'"></nz-step>
+  </nz-steps>
+  <nz-alert *ngIf="currentProject" nzType="success" [nzMessage]="'当前配置：'+currentProject.name"
+            [nzShowIcon]="true"></nz-alert>
+  <nz-alert *ngIf="!currentProject" nzType="error" nzMessage="未配置项目" [nzShowIcon]="true"></nz-alert>
+  <div class="content-box">
+    <!--上传-->
+    <ng-template [ngIf]="currentStep === 0">
+      <nz-upload
+        class="uploader"
+        [nzDisabled]="!currentProject"
+        nzType="drag"
+        nzAccept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        [nzBeforeUpload]="handleFile.bind(this)"
+        [nzShowUploadList]="false"
+      >
+        <p class="ant-upload-drag-icon">
+          <i nz-icon nzType="inbox"></i>
+        </p>
+        <p class="ant-upload-text">
+          点击或将文件拖到此区域内
+        </p>
+        <p class="ant-upload-hint">
+          仅支持读取Excel文件
+        </p>
+      </nz-upload>
+    </ng-template>
+    <!--统计-->
+    <ng-template [ngIf]="currentStep===1">
+      <div class="card-container">
+        <nz-tabset [nzTabPosition]="'top'" nzType="card" [nzTabBarExtraContent]="extraTemplate">
+          <ng-template #extraTemplate>
+            <button nzType="primary" nz-button (click)="exportData()" [nzLoading]="handing">
+              <i nz-icon nzType="upload"></i>导出
+            </button>
+          </ng-template>
+          <nz-tab *ngFor="let tab of analyzations" [nzTitle]="tab.month">
+            <div style="padding: 16px">
+              <nz-table #table nzSize="small" [nzScroll]="{ x: '100%', y: '300px' }" [nzData]="tab.memberData"
+                        [nzPageSize]="10" [nzShowTotal]="totalTemplate">
+                <thead>
+                <tr>
+                  <th nzWidth="100px">人员</th>
+                  <th nzWidth="100px">计划工时</th>
+                  <th nzWidth="100px">实际工时</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let data of table.data">
+                  <td>{{ data.user.name }}</td>
+                  <td>{{ data.totalPredictWork }}</td>
+                  <td>{{ data.totalFinishWork }}</td>
+                </tr>
+                </tbody>
+                <ng-template #totalTemplate let-total>共 {{ total }} 条数据</ng-template>
+              </nz-table>
+            </div>
+          </nz-tab>
+        </nz-tabset>
+      </div>
+    </ng-template>
+    <ng-template [ngIf]="currentStep===2">
+      <nz-result [nzIcon]="'smile-twotone'" nzTitle="导出成功" style="padding-top: 0">
+        <div nz-result-extra>
+          <button nz-button nzType="primary" (click)="exportArchivedFile()">导出文件</button>
+        </div>
+      </nz-result>
+    </ng-template>
+  </div>
+  <!--设置弹窗-->
+  <nz-modal nzClassName="setting-modal" nzWidth="80vw" [nzMaskClosable]="false" [nzStyle]="{ top: '5vh' }"
+            [(nzVisible)]="modalVisible" nzTitle="设置" [nzFooter]="null"
+            (nzOnCancel)="modalVisible=false">
+    <app-setting [show]="modalVisible"></app-setting>
+  </nz-modal>
+</div>
+
+

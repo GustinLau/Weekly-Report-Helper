@@ -1,0 +1,49 @@
+<div class="user-container">
+  <button class="add-btn" nz-button nzType="primary" nzSize="small" nzShape="round" (click)="openModal(null,true)">
+    <i nz-icon nzType="download"></i>新增
+  </button>
+  <nz-table #table nzSize="small" [nzData]="data" [nzPageSize]="10" [nzShowTotal]="totalTemplate">
+    <thead>
+    <tr>
+      <th nzWidth="160px">工号</th>
+      <th>姓名</th>
+      <th nzWidth="100px">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of table.data">
+      <td nzEllipsis>{{ data.id }}</td>
+      <td nzEllipsis>{{ data.name }}</td>
+      <td>
+        <span class="link-type primary" (click)="openModal(data,false)">修改</span>
+        <span style="padding: 0 8px">/</span>
+        <span class="link-type danger" (click)="deleteUser(data)">删除</span>
+      </td>
+    </tr>
+    </tbody>
+    <ng-template #totalTemplate let-total>共 {{ total }} 条数据</ng-template>
+  </nz-table>
+
+  <nz-modal [(nzVisible)]="isVisible" [nzTitle]="isCreate?'新增用户':'修改用户'" [nzFooter]="null"
+            (nzOnCancel)="isVisible=false">
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="saveUser(validateForm.value)">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="id">工号</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="请输入工号">
+          <input nz-input formControlName="id" id="id" [readOnly]="!isCreate"/>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name" nzRequired>姓名</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="请输入姓名">
+          <input nz-input id="name" formControlName="name"/>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item nz-row>
+        <nz-form-control [nzSpan]="14" [nzOffset]="6">
+          <button nz-button nzType="primary">保存</button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-modal>
+</div>

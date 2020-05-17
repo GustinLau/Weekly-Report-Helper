@@ -1,0 +1,24 @@
+.project-container {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  padding-right: 24px;
+
+  ::ng-deep {
+    .ant-checkbox-disabled .ant-checkbox-inner {
+      background-color: #1890ff;
+      border-color: #1890ff !important;
+    }
+
+    .ant-checkbox-disabled, .ant-checkbox-disabled .ant-checkbox-input, .ant-checkbox-disabled + span {
+      cursor: pointer;
+    }
+
+    .ant-checkbox-disabled.ant-checkbox-checked .ant-checkbox-inner::after {
+      border-color: #fff;
+    }
+  }
+}
+
+.add-btn {
+  margin-bottom: 8px;
+}

@@ -1,0 +1,53 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~ng-zorro-antd/ng-zorro-antd.min.css";
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Microsoft YaHei UI", Arial, Helvetica, sans-serif;
+}
+
+.ant-table-ping-right .ant-table-cell-fix-right-first::after, .ant-table-ping-right .ant-table-cell-fix-right-last::after, .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after{
+  box-shadow: none;
+}
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #EEE;
+
+  .title {
+    color: white;
+    margin: 0;
+    padding: 50px 20px;
+  }
+}
+
+.setting-modal {
+  .ant-modal-body {
+    padding: 0;
+  }
+}
+
+.link-type {
+  cursor: pointer;
+
+  &.primary {
+    color: #1890ff;
+
+    &:hover, &:active {
+      color: #40a9ff;
+    }
+  }
+
+  &.danger {
+    color: #ff4d4f;
+
+    &:hover, &:active {
+      color: #ff7875;
+    }
+  }
+}
