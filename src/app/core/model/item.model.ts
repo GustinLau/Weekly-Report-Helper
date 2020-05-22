@@ -10,9 +10,9 @@ export class Item {
   // 状况
   status: String;
   // 实际开始时间
-  startTime: number;
+  startTime: number | Date;
   // 实际结束时间
-  endTime: number;
+  endTime: number | Date;
   // PM预估工作量
   predictWork: number;
   // 已完成工作

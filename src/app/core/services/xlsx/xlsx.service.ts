@@ -17,6 +17,7 @@ import {FileService} from "../file/file.service";
 export class XlsxService {
 
   private _TIMEZONE_OFFSET = new Date().getTimezoneOffset() * 60 * 1000;
+  private _BASE_DATE = +(new Date(Date.UTC(1899, 11, 30)));
   private _COLUMNS = {
     id: 'ID',
     owner: '指派给',
@@ -59,6 +60,8 @@ export class XlsxService {
       fgColor: {rgb: 'C0C0C0'},
     }
   };
+  // 头部行号
+  headerIndex = 1;
 
   constructor(private store: StoreService, private file: FileService) {
   }
@@ -69,19 +72,27 @@ export class XlsxService {
       const worksheets = xlsx.parse(file.path);
       if (this.verify(worksheets)) {
         const rows = worksheets[0].data;
-        const worksheetsColumn: Array<String> = rows[1];
+        const worksheetsColumn: Array<String> = rows[this.headerIndex];
         const columnIndex = {};
         Object.keys(this._COLUMNS).forEach(k => {
           columnIndex[k] = worksheetsColumn.indexOf(this._COLUMNS[k])
         });
-
         // 组装数据
         let list: Item[] = [];
-        for (let i = 2; i < rows.length; i++) {
+        for (let i = this.headerIndex + 1; i < rows.length; i++) {
           const row = rows[i];
           const item = {} as Item;
           Object.keys(columnIndex).forEach(k => {
-            item[k] = row[columnIndex[k]]
+            const value = row[columnIndex[k]];
+            if (k == 'startTime' || k === 'endTime') {
+              if (typeof value === 'string') {
+                item[k] = new Date(value)
+              } else {
+                item[k] = this.num2Date(row[columnIndex[k]])
+              }
+            } else {
+              item[k] = row[columnIndex[k]]
+            }
           });
           if (item.owner) {
             list.push(item)
@@ -91,8 +102,8 @@ export class XlsxService {
         const distinctTimeItems = this.groupBy(list, 'startTime').map(i => i[0]);
         const monthList = [];
         for (let i = 0; i < distinctTimeItems.length; i++) {
-          const startTime = this.xlsxDateFormat(distinctTimeItems[i].startTime, '-').substr(0, 7);
-          if (startTime != 'NaN-NaN' && monthList.indexOf(startTime) === -1) {
+          const startTime = this.parseTime(distinctTimeItems[i].startTime, '{y}-{m}');
+          if (startTime && monthList.indexOf(startTime) === -1) {
             monthList.push(startTime)
           }
         }
@@ -107,14 +118,14 @@ export class XlsxService {
           analyzation.month = monthList[i];
           analyzation.memberData = [];
           const [year, month] = analyzation.month.split('-');
-          const maxDate = this.antiXlsxDateFormat(this.lastDateOfMonth(year, month));
-          const minDate = this.antiXlsxDateFormat(new Date(+year, +month - 1, 1));
-          const targetItems = list.filter(item => item.startTime >= minDate && item.startTime <= maxDate);
+          const maxDate = this.lastDateOfMonth(year, month).getTime();
+          const minDate = new Date(+year, +month - 1, 1).getTime();
+          const targetItems = list.filter(item => new Date(item.startTime).getTime() >= minDate && new Date(item.startTime).getTime() <= maxDate);
           const targetGroups = this.groupBy(targetItems, 'owner');
           targetGroups.forEach(group => {
             const data = new Data();
             data.user = userList.find(u => u.name === group[0].owner);
-            data.items = group.sort((a, b) => a.startTime < b.startTime);
+            data.items = group.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
             data.totalFinishWork = data.items.reduce((total, item) => total + item.finishWork, 0);
             data.totalPredictWork = data.items.reduce((total, item) => total + item.predictWork, 0);
             analyzation.memberData.push(data)
@@ -145,10 +156,10 @@ export class XlsxService {
           const user = data.user;
           const weekUserItems = data.items
             .filter(item => {
-              return new Date(this.xlsxDateFormat(item.startTime)).getTime() >= days[0].getTime() && new Date(this.xlsxDateFormat(item.endTime)).getTime() <= days[days.length - 1].getTime()
+              return new Date(item.startTime).getTime() >= days[0].getTime() && new Date(item.endTime).getTime() <= days[days.length - 1].getTime()
             })
             .map(item => {
-              return [project.id, project.name, '合作厂商', user.id, user.name, item.taskType, item.id, item.title, item.status, new Date(this.xlsxDateFormat(item.startTime)), new Date(this.xlsxDateFormat(item.endTime)), item.predictWork, item.finishWork, '']
+              return [project.id, project.name, '合作厂商', user.id, user.name, item.taskType, item.id, item.title, item.status, new Date(item.startTime), new Date(item.endTime), item.predictWork, item.finishWork, '']
             });
           weekItems = weekItems.concat(weekUserItems);
         });
@@ -186,7 +197,7 @@ export class XlsxService {
   }
 
   // 保存打包数据
-  saveArchiveFile(savePath){
+  saveArchiveFile(savePath) {
     this.file.archive(savePath);
   }
 
@@ -199,12 +210,19 @@ export class XlsxService {
   verify(worksheets) {
     if (worksheets.length > 0) {
       const data = worksheets[0].data;
-      if (data.length >= 2) {
-        const worksheetsColumn: Array<String> = data[1];
-        return Object.keys(this._COLUMNS).every(k => worksheetsColumn.includes(this._COLUMNS[k]))
+      if (data.length >= 1) {
+        let worksheetsColumn: Array<String> = data[0];
+        if (Object.keys(this._COLUMNS).every(k => worksheetsColumn.includes(this._COLUMNS[k]))) {
+          this.headerIndex = 0;
+          return true;
+        } else if (data.length >= 2) {
+          this.headerIndex = 1;
+          worksheetsColumn = data[1];
+          return Object.keys(this._COLUMNS).every(k => worksheetsColumn.includes(this._COLUMNS[k]));
+        }
       }
     }
-    return false
+    return false;
   }
 
   // 分组
@@ -240,23 +258,15 @@ export class XlsxService {
     return weeks;
   }
 
-  // excel时间类型格式化
-  xlsxDateFormat(value, format = '/') {
-    const time = new Date((value - 1) * 24 * 60 * 60 * 1000 + this._TIMEZONE_OFFSET);
-    time.setFullYear(time.getFullYear() - 70);
-    time.setDate(time.getDate() - 1);
-    let year = time.getFullYear();
-    let month = time.getMonth() + 1;
-    let date = time.getDate();
-    return `${year}${format}${month < 9 ? '0' + month : month}${format}${date < 9 ? '0' + date : date}`;
+  // 时间类型转数字
+  data2Num(date) {
+    const epoch = Date.parse(date);
+    return (epoch - this._BASE_DATE - this._TIMEZONE_OFFSET) / (24 * 60 * 60 * 1000);
   }
 
-  // 时间转excel时间类型
-  antiXlsxDateFormat(date) {
-    const time = date instanceof Date ? date : new Date(date.replace(/-/g, '/'));
-    time.setDate(time.getDate() + 1);
-    time.setFullYear(time.getFullYear() + 70);
-    return (time.getTime() - this._TIMEZONE_OFFSET) / 24 / 60 / 60 / 1000 + 1;
+  // 数字转时间类型
+  num2Date(num) {
+    return new Date((num * 24 * 60 * 60 * 1000) + this._BASE_DATE + this._TIMEZONE_OFFSET)
   }
 
   // 月份最后一天
@@ -877,7 +887,7 @@ export class XlsxService {
         } else if (cell.v instanceof Date) {
           cell.t = 'n';
           cell.z = xlsx.SSF._table[14];
-          cell.v = this.antiXlsxDateFormat(cell.v)
+          cell.v = this.data2Num(cell.v)
         } else {
           cell.t = 's'
         }
@@ -907,7 +917,7 @@ export class XlsxService {
           cell.t = 'n';
 
           cell.z = XLSX.SSF._table[14];
-          cell.v = this.antiXlsxDateFormat(cell.v)
+          cell.v = this.data2Num(cell.v)
         } else {
           cell.t = 's'
         }
