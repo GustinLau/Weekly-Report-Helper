@@ -90,6 +90,8 @@ export class XlsxService {
               } else {
                 item[k] = this.num2Date(row[columnIndex[k]])
               }
+            } else if (k === 'owner') {
+              item[k] = row[columnIndex[k]].replace(/<(\w|\\)+>/, '').trim()
             } else {
               item[k] = row[columnIndex[k]]
             }
@@ -118,7 +120,7 @@ export class XlsxService {
           analyzation.month = monthList[i];
           analyzation.memberData = [];
           const [year, month] = analyzation.month.split('-');
-          const maxDate = this.lastDateOfMonth(year, month).getTime();
+          const maxDate = this.lastDateOfMonth(year, month).getTime() + 1000 * 60 * 60 * 24 - 1;
           const minDate = new Date(+year, +month - 1, 1).getTime();
           const targetItems = list.filter(item => new Date(item.startTime).getTime() >= minDate && new Date(item.startTime).getTime() <= maxDate);
           const targetGroups = this.groupBy(targetItems, 'owner');
@@ -130,7 +132,11 @@ export class XlsxService {
             data.totalPredictWork = data.items.reduce((total, item) => total + item.predictWork, 0);
             analyzation.memberData.push(data)
           });
-          analyzation.memberData.sort((a, b) => a.user.id.localeCompare(b.user.id));
+          try{
+            analyzation.memberData.sort((a, b) => a.user.id.localeCompare(b.user.id));
+          }catch (e) {
+            reject(-2)
+          }
           analyzations.push(analyzation);
         }
         resolve(analyzations)

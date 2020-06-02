@@ -59,7 +59,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       .catch((e) => {
         console.error(e)
         this.message.remove();
-        this.message.error(e === -1 ? '文件内容错误，请确认' : e.toString())
+        if (e === -1) {
+          this.message.error('文件内容错误，请确认')
+        } else if (e === -2) {
+          this.message.error('存在未配置人员，请确认配置')
+        } else {
+          this.message.error(e.toString())
+        }
+
       });
     return false;
   }

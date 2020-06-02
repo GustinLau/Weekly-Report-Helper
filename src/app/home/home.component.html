@@ -14,7 +14,7 @@
         class="uploader"
         [nzDisabled]="!currentProject"
         nzType="drag"
-        nzAccept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        nzAccept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
         [nzBeforeUpload]="handleFile.bind(this)"
         [nzShowUploadList]="false"
       >
@@ -52,8 +52,8 @@
                 <tbody>
                 <tr *ngFor="let data of table.data">
                   <td>{{ data.user.name }}</td>
-                  <td>{{ data.totalPredictWork }}</td>
-                  <td>{{ data.totalFinishWork }}</td>
+                  <td>{{ data.totalPredictWork.toFixed(2) }}</td>
+                  <td>{{ data.totalFinishWork.toFixed(2) }}</td>
                 </tr>
                 </tbody>
                 <ng-template #totalTemplate let-total>共 {{ total }} 条数据</ng-template>
