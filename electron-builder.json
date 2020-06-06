@@ -4,11 +4,11 @@
     "output": "release/"
   },
   "releaseInfo": {
-    "releaseNotes": "1.添加了 xxxx\n2.更新了xxxx\n3.修复了 xxxx"
+    "releaseNotes": "新增检查更新功能"
   },
   "publish": {
     "provider": "generic",
-    "url": "http://localhost/test/"
+    "url": "https://electron-store.oss-cn-shenzhen.aliyuncs.com/ng-weekly-report-helper/"
   },
   "files": [
     "**/*",

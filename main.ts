@@ -3,7 +3,6 @@ import {autoUpdater, CancellationToken} from 'electron-updater';
 import * as path from 'path';
 import * as url from 'url';
 import * as os from 'os'
-const publish = require('./electron-builder.json').publish;
 
 let win: BrowserWindow = null;
 const args = process.argv.slice(1);
@@ -64,7 +63,10 @@ function setupUpdater() {
   // 不自动下载
   autoUpdater.autoDownload = false;
   let cancelToken = new CancellationToken();
-  autoUpdater.setFeedURL(publish);
+  autoUpdater.setFeedURL({
+    provider: 'generic',
+    url: 'https://electron-store.oss-cn-shenzhen.aliyuncs.com/ng-weekly-report-helper/'
+  });
   autoUpdater.on('checking-for-update', function () {
     win.webContents.send('update-checking')
   });
