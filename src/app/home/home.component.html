@@ -73,10 +73,38 @@
   </div>
   <!--设置弹窗-->
   <nz-modal nzClassName="setting-modal" nzWidth="80vw" [nzMaskClosable]="false" [nzStyle]="{ top: '5vh' }"
-            [(nzVisible)]="modalVisible" nzTitle="设置" [nzFooter]="null"
-            (nzOnCancel)="modalVisible=false">
-    <app-setting [show]="modalVisible"></app-setting>
+            [(nzVisible)]="settingModalVisible" nzTitle="设置" [nzFooter]="null"
+            (nzOnCancel)="settingModalVisible=false">
+    <app-setting [show]="settingModalVisible"></app-setting>
   </nz-modal>
+
+  <nz-modal nzClassName="update-modal" nzWidth="40vw" [nzMaskClosable]="false"
+            [(nzVisible)]="updateModalVisible" [nzTitle]="updateTitle" [nzFooter]="downloading?null:updateFooter"
+            (nzOnCancel)="closeUpdateModal()">
+    <ng-template [ngIf]="downloading">
+      <nz-progress [nzPercent]="downloadProgress" nzStatus="active"></nz-progress>
+    </ng-template>
+    <ng-template [ngIf]="!downloading">
+      <span style="line-height: 1.4"
+            [innerHTML]="releaseInfo && (releaseInfo.releaseNotes || '更新时间：' + releaseInfo.releaseDate)"></span>
+    </ng-template>
+  </nz-modal>
+  <ng-template #updateTitle>
+    <ng-template [ngIf]="downloading">
+      下载中...
+    </ng-template>
+    <ng-template [ngIf]="!downloading">
+      发现新版本 <span style="font-size: 12px;color: #8e8e8e;">v{{releaseInfo.version}}</span>
+    </ng-template>
+  </ng-template>
+  <ng-template #updateFooter>
+    <button class="add-btn" nz-button nzType="primary" (click)="startUpdate()">
+      立即更新
+    </button>
+    <button class="add-btn" nz-button (click)="updateModalVisible=false">
+      下次再说
+    </button>
+  </ng-template>
 </div>
 
 

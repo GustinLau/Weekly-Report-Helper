@@ -1,0 +1,3 @@
+provider: generic
+url: 'http://localhost/test/'
+updaterCacheDirName: weekly-report-helper-updater

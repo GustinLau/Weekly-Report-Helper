@@ -1,7 +1,7 @@
 {
   "name": "weekly-report-helper",
   "productName": "周报小助手",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "周报小助手",
   "homepage": "https://github.com/GustinLau/Weekly-Report-Helper",
   "author": {
@@ -62,7 +62,7 @@
     "cross-env": "7.0.2",
     "devtron": "1.4.0",
     "electron": "8.2.5",
-    "electron-builder": "22.6.0",
+    "electron-builder": "22.6.1",
     "electron-reload": "1.5.0",
     "electron-store": "5.1.1",
     "eslint": "6.8.0",
@@ -94,6 +94,7 @@
     "node": ">=10.13.0"
   },
   "dependencies": {
-    "archiver": "4.0.1"
+    "archiver": "4.0.1",
+    "electron-updater": "4.2.5"
   }
 }

@@ -14,7 +14,8 @@ import {
   NzAlertModule,
   NzMessageModule,
   NzMessageServiceModule,
-  NzModalModule, NzFormModule, NzResultModule
+  NzNotificationServiceModule,
+  NzModalModule, NzFormModule, NzResultModule, NzProgressModule
 } from 'ng-zorro-antd';
 import {IconDefinition} from '@ant-design/icons-angular';
 
@@ -41,8 +42,11 @@ const antdModule = [
   NzAlertModule,
   NzMessageModule,
   NzMessageServiceModule,
+  NzNotificationServiceModule,
+  NzProgressModule,
   NzResultModule,
-  NzModalModule];
+  NzModalModule
+];
 
 @NgModule({
   declarations: [PageNotFoundComponent],

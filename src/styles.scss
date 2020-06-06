@@ -8,9 +8,10 @@ html, body {
   font-family: "Microsoft YaHei UI", Arial, Helvetica, sans-serif;
 }
 
-.ant-table-ping-right .ant-table-cell-fix-right-first::after, .ant-table-ping-right .ant-table-cell-fix-right-last::after, .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after{
+.ant-table-ping-right .ant-table-cell-fix-right-first::after, .ant-table-ping-right .ant-table-cell-fix-right-last::after, .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after {
   box-shadow: none;
 }
+
 .container {
   height: 100%;
   display: flex;
@@ -50,4 +51,12 @@ html, body {
       color: #ff7875;
     }
   }
+}
+
+.ant-notification {
+  width: 250px;
+}
+
+.ant-notification-notice {
+  padding: 16px;
 }

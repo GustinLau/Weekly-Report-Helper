@@ -1,7 +1,9 @@
 import {app, BrowserWindow, screen, Menu, dialog, ipcMain} from 'electron';
+import {autoUpdater, CancellationToken} from 'electron-updater';
 import * as path from 'path';
 import * as url from 'url';
 import * as os from 'os'
+const publish = require('./electron-builder.json').publish;
 
 let win: BrowserWindow = null;
 const args = process.argv.slice(1);
@@ -48,7 +50,7 @@ function createWindow(): BrowserWindow {
   });
 
   setupListener();
-
+  setupUpdater();
   return win;
 }
 
@@ -56,6 +58,38 @@ function setupListener() {
   ipcMain.on('sync-get-app-name', (event) => {
     event.returnValue = app.name;
   });
+}
+
+function setupUpdater() {
+  // 不自动下载
+  autoUpdater.autoDownload = false;
+  let cancelToken = new CancellationToken();
+  autoUpdater.setFeedURL(publish);
+  autoUpdater.on('checking-for-update', function () {
+    win.webContents.send('update-checking')
+  });
+  autoUpdater.on('error', function () {
+    win.webContents.send('update-error')
+  });
+  autoUpdater.on('update-not-available', function () {
+    win.webContents.send('update-not-available')
+  });
+  autoUpdater.on('update-available', function (info) {
+    win.webContents.send('update-available', info)
+  });
+  autoUpdater.on('download-progress', function (progressObj) {
+    win.webContents.send('update-download-progress', progressObj)
+  });
+  autoUpdater.on('update-downloaded', function () {
+    win.webContents.send('update-downloaded')
+  });
+  ipcMain.on('start-update', () => autoUpdater.downloadUpdate(cancelToken));
+  ipcMain.on('cancel-download', () => {
+    cancelToken.cancel();
+    cancelToken.dispose();
+    cancelToken = new CancellationToken();
+  });
+  ipcMain.on('update-now', () => autoUpdater.quitAndInstall())
 }
 
 try {
@@ -93,6 +127,13 @@ try {
         label: '帮助',
         submenu: [
           {
+            label: `检查更新`,
+            role: 'check-update',
+            click: function () {
+              autoUpdater.checkForUpdates()
+            }
+          },
+          {
             label: `关于`,
             role: 'about',
             click: function () {
@@ -100,14 +141,14 @@ try {
                 type: 'info',
                 title: name,
                 message: name,
-                detail: `Version: ${app.getVersion()}\nElectron: ${process.versions.electron}\nChrome: ${process.versions.chrome}\nNode.js: ${process.versions.node}\nV8: ${process.versions.v8}\nOS: ${os.type()} ${os.arch()} ${os.release()}`
+                detail: `Version: ${app.getVersion()}\nAngular: 9.1.4\nElectron: ${process.versions.electron}\nChrome: ${process.versions.chrome}\nNode.js: ${process.versions.node}\nV8: ${process.versions.v8}\nOS: ${os.type()} ${os.arch()} ${os.release()}`
               })
             }
           }
         ]
       }
     ];
-    let menu = Menu.buildFromTemplate(template as any)
+    let menu = Menu.buildFromTemplate(template as any);
     Menu.setApplicationMenu(menu)
   });
 
