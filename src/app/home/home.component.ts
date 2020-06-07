@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.removeListeners()
+    this.removeListeners();
     this.notification.off('project-updated')
   }
 
@@ -92,6 +92,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.electron.ipcRenderer.removeAllListeners('update-checking');
     this.electron.ipcRenderer.removeAllListeners('update-error');
     this.electron.ipcRenderer.removeAllListeners('update-not-available');
+    this.electron.ipcRenderer.removeAllListeners('update-available');
+    this.electron.ipcRenderer.removeAllListeners('update-download-progress');
+    this.electron.ipcRenderer.removeAllListeners('update-downloaded');
   }
 
   startUpdate() {
