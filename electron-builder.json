@@ -4,7 +4,7 @@
     "output": "release/"
   },
   "releaseInfo": {
-    "releaseNotes": "新增检查更新功能"
+    "releaseNotes": "修复任务丢失问题"
   },
   "publish": {
     "provider": "generic",

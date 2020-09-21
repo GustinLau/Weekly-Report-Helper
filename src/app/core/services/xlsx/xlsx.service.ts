@@ -132,9 +132,9 @@ export class XlsxService {
             data.totalPredictWork = data.items.reduce((total, item) => total + item.predictWork, 0);
             analyzation.memberData.push(data)
           });
-          try{
+          try {
             analyzation.memberData.sort((a, b) => a.user.id.localeCompare(b.user.id));
-          }catch (e) {
+          } catch (e) {
             reject(-2)
           }
           analyzations.push(analyzation);
@@ -162,7 +162,7 @@ export class XlsxService {
           const user = data.user;
           const weekUserItems = data.items
             .filter(item => {
-              return new Date(item.startTime).getTime() >= days[0].getTime() && new Date(item.endTime).getTime() <= days[days.length - 1].getTime()
+              return new Date(item.startTime).getTime() >= days[0].getTime() && new Date(item.endTime).getTime() <= days[days.length-1].getTime() + 1000 * 60 * 60 * 24 - 1
             })
             .map(item => {
               return [project.id, project.name, '合作厂商', user.id, user.name, item.taskType, item.id, item.title, item.status, new Date(item.startTime), new Date(item.endTime), item.predictWork, item.finishWork, '']
@@ -248,7 +248,7 @@ export class XlsxService {
     let week = [];
     const lastDate = new Date(year, month, 0).getDate();
     for (let i = 1; i <= lastDate; i++) {
-      const date = new Date(2020, month - 1, i);
+      const date = new Date(year, month - 1, i);
       const dayOfWeek = date.getDay();
       if (dayOfWeek === 0) {
         week[6] = date;
