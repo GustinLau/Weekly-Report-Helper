@@ -4,7 +4,7 @@
     "output": "release/"
   },
   "releaseInfo": {
-    "releaseNotes": "修复任务丢失问题"
+    "releaseNotes": "移除无用Sheet"
   },
   "publish": {
     "provider": "generic",

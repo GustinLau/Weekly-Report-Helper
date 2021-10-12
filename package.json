@@ -1,7 +1,7 @@
 {
   "name": "weekly-report-helper",
   "productName": "周报小助手",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "周报小助手",
   "homepage": "https://github.com/GustinLau/Weekly-Report-Helper",
   "author": {
@@ -61,7 +61,7 @@
     "core-js": "3.6.5",
     "cross-env": "7.0.2",
     "devtron": "1.4.0",
-    "electron": "10.1.3",
+    "electron": "8.2.5",
     "electron-builder": "22.6.1",
     "electron-reload": "1.5.0",
     "electron-store": "5.1.1",

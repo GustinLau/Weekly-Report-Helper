@@ -315,16 +315,16 @@ export class XlsxService {
   // 转Buffer
   excelBuffer(data): Buffer {
     const wb = new Workbook();
-    this.insertSheet_1(wb);
     this.insertSheet_2(wb, data);
-    this.insertSheet_3(wb);
-    this.insertSheet_4(wb);
-    this.insertSheet_5(wb);
-    this.insertSheet_6(wb);
-    this.insertSheet_7(wb);
-    this.insertSheet_8(wb);
-    this.insertSheet_9(wb);
-    this.insertSheet_10(wb);
+    // this.insertSheet_1(wb);
+    // this.insertSheet_3(wb);
+    // this.insertSheet_4(wb);
+    // this.insertSheet_5(wb);
+    // this.insertSheet_6(wb);
+    // this.insertSheet_7(wb);
+    // this.insertSheet_8(wb);
+    // this.insertSheet_9(wb);
+    // this.insertSheet_10(wb);
     const excel = XLSX.write(wb, {
       bookType: 'xlsx',
       bookSST: false,
