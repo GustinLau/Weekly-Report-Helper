@@ -315,8 +315,8 @@ export class XlsxService {
   // 转Buffer
   excelBuffer(data): Buffer {
     const wb = new Workbook();
-    this.insertSheet_2(wb, data);
     // this.insertSheet_1(wb);
+    this.insertSheet_2(wb, data);
     // this.insertSheet_3(wb);
     // this.insertSheet_4(wb);
     // this.insertSheet_5(wb);

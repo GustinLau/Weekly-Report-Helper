@@ -1,4 +1,4 @@
-import {app, BrowserWindow, screen, Menu, dialog, ipcMain} from 'electron';
+import {app, BrowserWindow, screen, Menu, dialog, ipcMain, shell} from 'electron';
 import {autoUpdater, CancellationToken} from 'electron-updater';
 import * as path from 'path';
 import * as url from 'url';
@@ -135,6 +135,21 @@ try {
               autoUpdater.checkForUpdates()
             }
           },
+          {
+            label: `操作说明`,
+            role: 'doc',
+            click: function () {
+              shell.openExternal("https://github.com/GustinLau/Weekly-Report-Helper/wiki");
+            }
+          },
+          {
+            label: `意见反馈`,
+            role: 'feedback',
+            click: function () {
+              shell.openExternal("https://github.com/GustinLau/Weekly-Report-Helper/issues");
+            }
+          },
+          {type: 'separator'},
           {
             label: `关于`,
             role: 'about',

@@ -4,7 +4,7 @@
     "output": "release/"
   },
   "releaseInfo": {
-    "releaseNotes": "移除无用Sheet"
+    "releaseNotes": "新增操作文档和意见反馈功能"
   },
   "publish": {
     "provider": "generic",
